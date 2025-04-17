@@ -1,6 +1,6 @@
 # Hawthorn Labs
 is a series of modules for VCV Rack.  Ok, well, currently only ONE module, and that module is called...
-## Planetary LFO's
+## Planetary LFOs
 A module for VCV Rack that uses the revolutions of the planets in our solar system as a basis for LFO rates.  For the purposes of this module, Pluto is included as a planet.
 A trigger output is also provided that sends a +10v pulse every time a revolution is complete (every "year").
 - The Speed knob has 6 lights on it:
