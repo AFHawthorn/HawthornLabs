@@ -39,15 +39,14 @@ struct PlanetaryLFOs : Module {
 	int counter = 2;
 	int speedKnob = 1;
 	float timeCompression = 1.f;
-	float knobRange[2] = {1.f, 100.f};
 
 	float _gain = 5.f;
 	float _2PI = 2.f * M_PI;
 
 	dsp::PulseGenerator trig[9];
 
-	double planet[9] = {mercury, venus, mars, jupiter, saturn, uranus, neptune, pluto};
-	double freq[9] = {mercury, venus, mars, jupiter, saturn, uranus, neptune, pluto};
+	double planet[9] = {mercury, venus, earth, mars, jupiter, saturn, uranus, neptune, pluto};
+	double freq[9] = {mercury, venus, earth, mars, jupiter, saturn, uranus, neptune, pluto};
 	double phase[9];
 
 
@@ -79,8 +78,8 @@ struct PlanetaryLFOs : Module {
 			for (int i = 0; i < 9; i ++){
 				if (outputs[LFO + i].isConnected() || outputs[TR + i].isConnected()) {
 					freq[i] = planet[i] * timeCompression;
-					double phase_increment = _2PI * freq[i] / args.sampleRate;	// calc phase increment
-					phase[i] += phase_increment;							// push osc forward 2 steps
+					double phase_increment = _2PI * freq[i] / args.sampleRate;		// calc phase increment
+					phase[i] += phase_increment;									// push osc forward 2 steps
 					if (phase[i] >= _2PI){
 						phase[i] -= _2PI;
 						trig[i].trigger(0.01f);
