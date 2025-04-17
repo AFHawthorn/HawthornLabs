@@ -6,7 +6,7 @@ Plugin* pluginInstance;
 
 void init(Plugin* p) {
 	pluginInstance = p;
-	p->addModel(modelMyModule);
+	p->addModel(modelPlanetaryLFOs);
 	// Add modules here
 	// p->addModel(modelMyModule);
 

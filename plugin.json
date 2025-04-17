@@ -1,7 +1,7 @@
 {
   "slug": "PlanetaryLFOs",
   "name": "Planetary LFOs",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "CC-BY-ND-4.0",
   "brand": "Hawthorn",
   "author": "Alex Hawthorn",
@@ -14,10 +14,12 @@
   "changelogUrl": "",
   "modules": [
     {
-      "slug": "MyModule",
-      "name": "MyModule",
-      "description": "test",
-      "tags": ["Oscillator"]
+      "slug": "PlanetaryLFOs",
+      "name": "Planetary LFOs",
+      "description": "LFOs from the movement of the solar system",
+      "tags": [
+        "Low-Frequency Oscillator"
+      ]
     }
   ]
 }
