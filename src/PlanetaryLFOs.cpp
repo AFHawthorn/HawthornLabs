@@ -1,12 +1,15 @@
 #include "plugin.hpp"
-
+#include <chrono>
+#include <ctime>
 
 struct PlanetaryLFOs : Module {
 	enum ParamId {
 		SPEED_PARAM,
+		RESET_PARAM,
 		PARAMS_LEN
 	};
 	enum InputId {
+		RESET_INP,
 		INPUTS_LEN
 	};
 	enum OutputId {
@@ -29,6 +32,10 @@ struct PlanetaryLFOs : Module {
 	double neptune = 0.000000000193546389198563;	// was 5166720000
 	double pluto = 0.000000000127805588273786;		// was 7824384000
 
+	long timeSinceEpoch = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	long planetDur[9] = {7603200, 19414080, 31553280, 59356800, 374198400, 928540800, 2642889600, 5166720000, 7824384000}; 						// duration of each planet's year in seconds, used against timeSinceEpoch to figure out starting phase.
+	double phase[9];
+
 	// float realtime = 1.f;
 	// float inADay = 365.2f;
 	// float inAnHour = 8764.8f;
@@ -39,7 +46,6 @@ struct PlanetaryLFOs : Module {
 	int counter = 2;
 	int speedKnob = 1;
 	float timeCompression = 1.f;
-
 	float _gain = 5.f;
 	float _2PI = 2.f * M_PI;
 
@@ -47,12 +53,13 @@ struct PlanetaryLFOs : Module {
 
 	double planet[9] = {mercury, venus, earth, mars, jupiter, saturn, uranus, neptune, pluto};
 	double freq[9] = {mercury, venus, earth, mars, jupiter, saturn, uranus, neptune, pluto};
-	double phase[9];
-
 
 	PlanetaryLFOs() {
+		for (int i = 0; i < 9; i ++){phase[i] = ((double)(timeSinceEpoch % planetDur[i]) / (double)planetDur[i])*_2PI;};
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 		configParam(SPEED_PARAM, 1, 1100, 1, "Time Compression");
+		configParam(RESET_PARAM, 0.f, 1.f, 0.f, "Reset all LFOs");
+		configInput(RESET_INP, "Reset Trig");
 		configOutput(TR + 0, "Mercury Trig");
 		configOutput(TR + 1, "Venus Trig");
 		configOutput(TR + 2, "Earth Trig");
@@ -93,6 +100,8 @@ struct PlanetaryLFOs : Module {
 		if (counter % 8 == 0){	// check speed knob every 8 samples
 			if (speedKnob != params[SPEED_PARAM].getValue())
 				updateTimeCompression();
+			if (params[RESET_PARAM].getValue() > 0.5f || inputs[RESET_INP].getVoltage() > 0.1f)
+				resetLFOs();
 		};
 		counter++;
 		if (counter > args.sampleRate)
@@ -140,6 +149,10 @@ struct PlanetaryLFOs : Module {
 		};
 	}
 
+	void resetLFOs(){
+		memset(phase, 0.0, sizeof(phase));
+	}
+
 	float scaleKnobValue(float speedKnob, int knobMin, int knobMax, float scaleMin, float scaleMax){
 		float knobPercent = (speedKnob - knobMin)/(knobMax - knobMin);
 		return (knobPercent) * (scaleMax - scaleMin) + scaleMin;
@@ -157,12 +170,15 @@ struct PlanetaryLFOsWidget : ModuleWidget {
 		setModule(module);
 		setPanel(createPanel(asset::plugin(pluginInstance, "res/PlanetaryLFOs.svg")));
 
-		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+		addChild(createWidget<ScrewBlack>(Vec(RACK_GRID_WIDTH, 0)));
+		addChild(createWidget<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+		addChild(createWidget<ScrewBlack>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+		addChild(createWidget<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(20.55, 73.104)), module, PlanetaryLFOs::SPEED_PARAM));
+		addParam(createParamCentered<LEDButton>(mm2px(Vec(61.179, 112.134)), module, PlanetaryLFOs::RESET_PARAM));
+
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(61.179, 101.694)), module, PlanetaryLFOs::RESET_INP));
 
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(11.108, 25.624)), module, PlanetaryLFOs::TR + 0));
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(23.626, 32.546)), module, PlanetaryLFOs::TR + 1));
