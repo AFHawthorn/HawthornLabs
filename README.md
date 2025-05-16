@@ -27,4 +27,4 @@ The reset button and trigger input reset all the phases to zero.  This cannot (c
 - Neptune's year is 59,800 Earth-days
 - and Pluto's year is 90,560 Earth-days
 
-I hope you enjoy! Feedback and bug reports (and [donations](https://www.paypal.me/afhawthorn)!)are very welcome.
+I hope you enjoy! Feedback and bug reports (and [donations](https://www.paypal.me/afhawthorn)!) are very welcome.
