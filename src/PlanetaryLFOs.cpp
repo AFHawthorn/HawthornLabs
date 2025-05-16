@@ -30,7 +30,7 @@ struct PlanetaryLFOs : Module {
 	double neptune = 0.000000000193546389198563;	// was 5166720000
 	double pluto = 0.000000000127805588273786;		// was 7824384000
 
-	long timeSinceEpoch = std::chrono::duration_cast<std::chrono::hours>(std::chrono::system_clock::now().time_since_epoch()).count();
+	long timeSinceEpoch = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 	long planetDur[9] = {7603200, 19414080, 31553280, 59356800, 374198400, 928540800, 2642889600, 5166720000, 7824384000}; 						// duration of each planet's year in seconds, used against timeSinceEpoch to figure out starting phase.
 	double phase[9];
 
