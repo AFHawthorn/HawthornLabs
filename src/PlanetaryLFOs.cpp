@@ -93,6 +93,8 @@ struct PlanetaryLFOs : Module {
 				if (outputs[LFO + i].isConnected()) {
 					double sine_output = _gain * sin(phase[i]);
 					outputs[LFO + i].setVoltage(sine_output);
+				};
+				if (outputs[TR + i].isConnected()) {
 					outputs[TR + i].setVoltage(trig[i].process(args.sampleTime) ? 10.0f : 0.0f);
 				};
 			};
