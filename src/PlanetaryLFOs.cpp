@@ -6,6 +6,8 @@ struct PlanetaryLFOs : Module {
 	enum ParamId {
 		SPEED_PARAM,
 		RESET_PARAM,
+		YEAR_INC_PARAM,
+		YEAR_DEC_PARAM,
 		PARAMS_LEN
 	};
 	enum InputId {
@@ -46,6 +48,7 @@ struct PlanetaryLFOs : Module {
 	int counter = 2;
 	int speedKnob = 1;
 	float timeCompression = 1.f;
+	int dispYear = 1970;
 	float _gain = 5.f;
 	float _2PI = 2.f * M_PI;
 
@@ -102,6 +105,10 @@ struct PlanetaryLFOs : Module {
 				updateTimeCompression();
 			if (params[RESET_PARAM].getValue() > 0.5f || inputs[RESET_INP].getVoltage() > 0.1f)
 				resetLFOs();
+			if (params[YEAR_INC_PARAM].getValue() > 0.5f)
+				yearIncrease();
+			if (params[YEAR_DEC_PARAM].getValue() > 0.5f)
+				yearDecrease();
 		};
 		counter++;
 		if (counter > args.sampleRate)
@@ -153,6 +160,14 @@ struct PlanetaryLFOs : Module {
 		memset(phase, 0.0, sizeof(phase));
 	}
 
+	void yearIncrease(){
+		dispYear ++;
+	}
+
+	void yearDecrease(){
+		dispYear --;
+	}
+
 	float scaleKnobValue(float speedKnob, int knobMin, int knobMax, float scaleMin, float scaleMax){
 		float knobPercent = (speedKnob - knobMin)/(knobMax - knobMin);
 		return (knobPercent) * (scaleMax - scaleMin) + scaleMin;
@@ -177,6 +192,8 @@ struct PlanetaryLFOsWidget : ModuleWidget {
 
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(20.55, 73.104)), module, PlanetaryLFOs::SPEED_PARAM));
 		addParam(createParamCentered<LEDButton>(mm2px(Vec(61.179, 112.134)), module, PlanetaryLFOs::RESET_PARAM));
+		addParam(createParamCentered<LEDButton>(mm2px(Vec(65, 38)), module, PlanetaryLFOs::YEAR_INC_PARAM));
+		addParam(createParamCentered<LEDButton>(mm2px(Vec(65, 45)), module, PlanetaryLFOs::YEAR_DEC_PARAM));
 
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(61.179, 101.694)), module, PlanetaryLFOs::RESET_INP));
 
@@ -205,7 +222,7 @@ struct PlanetaryLFOsWidget : ModuleWidget {
 		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(23.75, 67.50)), module, PlanetaryLFOs::LIGHT + 3));
 		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(27.1, 73.104)), module, PlanetaryLFOs::LIGHT + 4));
 		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(23.75, 78.804)), module, PlanetaryLFOs::LIGHT + 5));
-	}
+		}
 };
 
 Model* modelPlanetaryLFOs = createModel<PlanetaryLFOs, PlanetaryLFOsWidget>("PlanetaryLFOs");
