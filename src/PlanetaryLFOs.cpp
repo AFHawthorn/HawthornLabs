@@ -83,14 +83,14 @@ struct PlanetaryLFOs : Module {
 	void process(const ProcessArgs& args) override {
 		if (counter % 2 == 0){	// LFO's are slow, so run every other sample (could do half and half)
 			for (int i = 0; i < 9; i ++){
-				if (outputs[LFO + i].isConnected() || outputs[TR + i].isConnected()) {
-					freq[i] = planet[i] * timeCompression;
-					double phase_increment = _2PI * freq[i] / args.sampleRate;		// calc phase increment
-					phase[i] += phase_increment;									// push osc forward 2 steps
-					if (phase[i] >= _2PI){
-						phase[i] -= _2PI;
-						trig[i].trigger(0.01f);
-					};
+				freq[i] = planet[i] * timeCompression;
+				double phase_increment = _2PI * freq[i] / args.sampleRate;		// calc phase increment
+				phase[i] += phase_increment;									// push osc forward 2 steps
+				if (phase[i] >= _2PI){
+					phase[i] -= _2PI;
+					trig[i].trigger(0.01f);
+				};
+				if (outputs[LFO + i].isConnected()) {
 					double sine_output = _gain * sin(phase[i]);
 					outputs[LFO + i].setVoltage(sine_output);
 					outputs[TR + i].setVoltage(trig[i].process(args.sampleTime) ? 10.0f : 0.0f);
